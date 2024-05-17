@@ -65,6 +65,36 @@ def test_create_group(nexus_client, cli_runner, recipe, strict, member_repos_fac
 
 
 @pytest.mark.parametrize(
+        'strict, gpg_keypair', itertools.product(
+            ['--no-strict-content', '--strict-content'],  # strict
+            # gpg-keypair + passphrase combination:71
+            [
+                '',
+                '--gpg-keypair=tests/fixtures/yum/private.gpg.key --passphrase=test',
+                '--gpg-keypair=tests/fixtures/yum/private.gpg.key'
+            ])
+)
+@pytest.mark.integration
+def test_create_group_yum(nexus_client, cli_runner, strict, gpg_keypair, member_repos_factory):
+    member_names_arg, member_names = member_repos_factory('yum')
+
+    repo_name = pytest.helpers.repo_name('group', strict, gpg_keypair)
+
+    create_cmd = (
+            f'repository create group yum {repo_name}'
+            f' {strict} {gpg_keypair} {member_names_arg}'
+    )
+
+    result = cli_runner.invoke(nexus_cli, create_cmd)
+    repo = nexus_client.repositories.get_by_name(repo_name)
+
+    assert result.output == ''
+    assert result.exit_code == exception.CliReturnCode.SUCCESS.value
+    assert repo.name == repo_name
+    assert repo.member_names == member_names
+
+
+@pytest.mark.parametrize(
     'v_policy, l_policy, w_policy, strict, c_policy', itertools.product(
         repository.model.MavenHostedRepository.VERSION_POLICIES,  # v_policy
         repository.model.MavenHostedRepository.LAYOUT_POLICIES,  # l_policy
