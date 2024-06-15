@@ -278,7 +278,7 @@ class RepositoryCollection(BaseCollection):
         if result != 'null':
             raise exception.NexusClientCreateRepositoryError(resp)
 
-    @util.with_min_version('3.20.1')
+    @util.with_min_version('3.68.1')
     def set_health_check(self, name: str, enable: bool = False) -> None:
         """
         Set the health check status on a Nexus 3 repository.

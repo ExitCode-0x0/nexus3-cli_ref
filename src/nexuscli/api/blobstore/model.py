@@ -85,7 +85,7 @@ class Blobstore(BaseModel):
     def soft_quota(self):
         return self._raw['softQuota']
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def update(self, params: dict) -> None:
         self.configuration.update(params)
         resp = self._client.put(

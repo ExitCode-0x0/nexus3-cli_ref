@@ -35,17 +35,17 @@ class RealmCollection(BaseCollection):
 
         return self._collection
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def raw_active(self) -> List[str]:
         """List of active security realms on the Nexus 3 service."""
         return self._service_get('security/realms/active', api_version='beta')
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def raw_list(self) -> List[dict]:
         """The raw Nexus server response for available security realms."""
         return self._service_get('security/realms/available', api_version='beta')
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def activate(self, realm_id: str) -> None:
         """
         Activate a security realm.
