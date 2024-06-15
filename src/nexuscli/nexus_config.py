@@ -3,6 +3,7 @@ import typing
 import warnings
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Dict, Union
 
 
 DEFAULT_CONFIG = str(Path.home().joinpath('.nexus-cli').absolute())
@@ -184,3 +185,14 @@ class NexusConfig:
 
         for key, default_value in DEFAULTS.items():
             setattr(self, f'_{key}', config.get(key, default_value))
+
+    def merge_with_dict(self, kwargs: Dict[str, Union[bool, str]]) -> None:
+        """
+        Merge the configuration from ``kwargs`` into the existing one. The
+
+        :param kwargs: configuration values to load. Keys should match arguments to the class init.
+        """
+        for key in DEFAULTS.keys():
+            value = kwargs.get(key)
+            if value is not None:
+                setattr(self, f'_{key}', value)

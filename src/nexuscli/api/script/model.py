@@ -16,6 +16,8 @@ class ScriptCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if the response from the Nexus
             service isn't recognised; i.e.: any HTTP code other than 200, 404.
         """
+        self._ensure_groovy_enabled()
+
         resp = self._http.head(f'script/{name}')
         if resp.status_code == 200:
             return True
@@ -34,6 +36,8 @@ class ScriptCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if the response from the Nexus
             service isn't recognised; i.e.: any HTTP code other than 200, 404.
         """
+        self._ensure_groovy_enabled()
+
         resp = self._http.get(f'script/{name}')
         if resp.status_code == 200:
             return resp.json()
@@ -80,6 +84,8 @@ class ScriptCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if the script creation isn't
             successful; i.e.: any HTTP code other than 204.
         """
+        self._ensure_groovy_enabled()
+
         script = {
             'type': script_type,
             'name': script_name,
@@ -101,6 +107,8 @@ class ScriptCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if the Nexus service fails to
             delete the script; i.e.: any HTTP code other than 204.
         """
+        self._ensure_groovy_enabled()
+
         endpoint = f'script/{script_name}'
         resp = self._http.delete(endpoint)
         util.validate_response(resp, 204)
