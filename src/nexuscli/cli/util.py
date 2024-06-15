@@ -2,7 +2,7 @@ import click
 import functools
 import os
 import sys
-from typing import Dict, List, Optional
+from typing import Dict, List, Union, Optional, Callable
 from click_aliases import ClickAliasedGroup
 
 from nexuscli import exception
@@ -91,32 +91,60 @@ def rename_keys(mydict: dict, rename_map: dict):
             del mydict[current_name]
 
 
-def _get_client_kwargs() -> Optional[Dict[str, str]]:
+def _with_env_var_prefix(names) -> List[str]:
+    return [f'{constants.ENV_VAR_PREFIX}_{x}' for x in names]
+
+
+def _env_settings_into_kwargs(
+        variables: List[str],
+        kwargs: Dict[str, Union[bool, str]],
+        transform_method: Optional[Callable] = None) -> None:
     def _without_prefix(name) -> str:
         return name[len(constants.ENV_VAR_PREFIX) + 1:].lower()
 
-    def _with_prefix(names) -> List[str]:
-        return [f'{constants.ENV_VAR_PREFIX}_{x}' for x in names]
+    for env_var in variables:
+        if os.environ.get(env_var):
+            if transform_method:
+                kwargs[_without_prefix(env_var)] = transform_method(os.environ[env_var])
+            else:
+                kwargs[_without_prefix(env_var)] = os.environ[env_var]
 
-    # This seemed an easier implementation compared to "exposing" the cli.login options to all the
-    # other commands. The part I don't love is that I have to repeat the option names here.
-    required_variables = _with_prefix(constants.REQUIRED_NEXUS_OPTIONS)
-    defined_env_vars = [x in os.environ for x in required_variables]
 
-    if any(defined_env_vars):
-        if not all(defined_env_vars):
-            errmsg = 'If any of these environment variables are set, then ALL must be set: ' \
-                     f'{required_variables}'
-            raise exception.NexusClientInvalidCredentials(errmsg)
+def _get_login_from_env() -> List[str]:
+    login_variables = _with_env_var_prefix(constants.NEXUS_OPTIONS_FOR_LOGIN)
+    has_any_required_env_vars = any([x in os.environ for x in login_variables])
+    has_all_required_env_vars = all([x in os.environ for x in login_variables])
+
+    if has_any_required_env_vars:
+        if has_all_required_env_vars:
+            return login_variables
         else:
-            config_kwargs = {}
-            all_env_vars = required_variables + _with_prefix(constants.OPTIONAL_NEXUS_OPTIONS)
-            for env_var in all_env_vars:
-                if os.environ.get(env_var):
-                    config_kwargs[_without_prefix(env_var)] = os.environ[env_var]
+            errmsg = 'If any of these environment variables are set, then ALL must be set: ' \
+                     f'{login_variables}'
+            raise exception.NexusClientInvalidCredentials(errmsg)
 
-            return config_kwargs
-    return None
+    return []
+
+
+def _get_client_kwargs() -> Optional[Dict[str, Union[bool, str]]]:
+    config_kwargs: Dict[str, Union[bool, str]] = {}
+    variables_to_set: List[str]
+    bool_variables: List[str]
+
+    def _str_to_bool(value: str) -> bool:
+        return value.lower() in ('true', 't', 'yes', '1')
+
+    variables_to_set = _with_env_var_prefix(constants.OPTIONAL_NEXUS_OPTIONS)
+    variables_to_set += _get_login_from_env()
+    bool_variables = _with_env_var_prefix(constants.BOOL_OPTIONAL_NEXUS_OPTIONS)
+
+    _env_settings_into_kwargs(variables_to_set, config_kwargs)
+    _env_settings_into_kwargs(bool_variables, config_kwargs, _str_to_bool)
+
+    if config_kwargs:
+        return config_kwargs
+    else:
+        return None
 
 
 def get_client() -> NexusClient:
@@ -135,6 +163,7 @@ def get_client() -> NexusClient:
         sys.stderr.write(
             'Warning: configuration not found; proceeding with defaults.\n'
             'To remove this warning, please run `nexus3 login`\n')
+
     return NexusClient(config=config)
 
 

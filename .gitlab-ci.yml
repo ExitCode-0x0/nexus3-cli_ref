@@ -106,6 +106,7 @@ unit:
     - export VENV=$(mktemp -d)
     - python3 -m venv $VENV
     - . $VENV/bin/activate
+    - pip3 install setuptools
     - pip3 install dist/nexus3_cli*.whl
     # don't use --upgrade; we want to test the package as installed above
     - pip3 install .[test]

@@ -24,6 +24,7 @@ class BaseCollection:
         """
         return []
 
+    # TODO: check if this can be moved to ScriptCollection
     def run_script(self, script_name: str, data: Union[str, dict] = ''):
         """
         Runs an existing script on the Nexus 3 service.
@@ -37,12 +38,10 @@ class BaseCollection:
         :raises exception.NexusClientAPIError: if the Nexus service fails to
             run the script; i.e.: any HTTP code other than 200.
         """
+        self._ensure_groovy_enabled()
+
         if self._http is None:
             raise ValueError('Instance has no client')
-
-        if not self._http.config.groovy_enabled:
-            raise exception.FeatureNotImplemented(
-                f'Unable to run {script_name}: groovy_enabled is False')
 
         headers = {'content-type': 'text/plain'}
         endpoint = f'script/{script_name}/run'
@@ -68,6 +67,12 @@ class BaseCollection:
         response from the Nexus server.
         """
         self._list = None
+
+    # TODO: check if this can be moved to ScriptCollection
+    def _ensure_groovy_enabled(self) -> None:
+        if not self._http.config.groovy_enabled:
+            raise exception.FeatureNotImplemented(
+                'Unable use groovy scripts: groovy_enabled is False')
 
     def _service_get(self, endpoint: str, api_version: Optional[str] = None):
         """Most implementations of :py:meth:`raw_list` will use something like this"""
