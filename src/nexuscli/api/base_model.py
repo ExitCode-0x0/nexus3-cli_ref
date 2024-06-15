@@ -3,7 +3,7 @@ from typing import Optional
 from nexuscli.nexus_http import NexusHttp
 
 
-# When Python 3.6 is deprecated, switch to data class?
+# TODO: consider refactoring as data class
 class BaseModel:
     """
     Base class for Nexus 3 server objects.

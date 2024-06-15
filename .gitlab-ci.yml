@@ -19,9 +19,10 @@ stages:
 # --------------------------------------------------------------------------
 .unit_template: &unit_template
   before_script:
+    - pip install setuptools
     - pip install -e .[test]
   variables:
-    PYTHON_VERSION: '3.8'
+    PYTHON_VERSION: '3.12'
   image: python:${PYTHON_VERSION}
   stage: test
   script:
@@ -72,7 +73,7 @@ package:
 .python-matrix:
   parallel:
     matrix:
-      - PYTHON_VERSION: ['3.6', '3.7', '3.8']
+      - PYTHON_VERSION: ['3.10', '3.11', '3.12']
 
 unit:
   extends:
