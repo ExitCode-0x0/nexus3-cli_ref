@@ -98,16 +98,13 @@ def _with_env_var_prefix(names) -> List[str]:
 def _env_settings_into_kwargs(
         variables: List[str],
         kwargs: Dict[str, Union[bool, str]],
-        transform_method: Optional[Callable] = None) -> None:
+        transform_method: Callable = lambda x: x) -> None:
     def _without_prefix(name) -> str:
         return name[len(constants.ENV_VAR_PREFIX) + 1:].lower()
 
     for env_var in variables:
         if os.environ.get(env_var):
-            if transform_method:
-                kwargs[_without_prefix(env_var)] = transform_method(os.environ[env_var])
-            else:
-                kwargs[_without_prefix(env_var)] = os.environ[env_var]
+            kwargs[_without_prefix(env_var)] = transform_method(os.environ[env_var])
 
 
 def _get_login_from_env() -> List[str]:
