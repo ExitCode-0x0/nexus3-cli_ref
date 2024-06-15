@@ -4,9 +4,7 @@ from nexuscli.api.base_collection import BaseCollection
 
 
 class TaskCollection(BaseCollection):
-    # Moved from beta to v1:
-    # https://github.com/sonatype/nexus-public/commit/a6a8abcdcba3fd1947884f05f913d0da6939261c
-    @util.with_min_version('3.12.1')
+    @util.with_min_version('3.68.1')
     def raw_list(self) -> list:
         """
         List of all script names on the Nexus 3 service.
@@ -18,7 +16,7 @@ class TaskCollection(BaseCollection):
         # TODO: handle pagination
         return self._service_get('tasks')
 
-    @util.with_min_version('3.12.1')
+    @util.with_min_version('3.68.1')
     def show(self, task_id: str) -> dict:
         """
         Get a single task by id
@@ -34,7 +32,7 @@ class TaskCollection(BaseCollection):
 
         return resp.json()
 
-    @util.with_min_version('3.12.1')
+    @util.with_min_version('3.68.1')
     def run(self, task_id: str) -> None:
         """
         Run a task by id
@@ -51,7 +49,7 @@ class TaskCollection(BaseCollection):
 
         util.validate_response(resp, 204)
 
-    @util.with_min_version('3.12.1')
+    @util.with_min_version('3.68.1')
     def stop(self, task_id: str) -> None:
         """
         Stop a running task by id

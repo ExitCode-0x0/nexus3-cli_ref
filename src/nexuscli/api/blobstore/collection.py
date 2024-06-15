@@ -6,7 +6,7 @@ from nexuscli.api.base_collection import BaseCollection
 
 
 class BlobstoreCollection(BaseCollection):
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def raw_list(self) -> List[str]:
         """
         List of all blobstores on the Nexus 3 service.
@@ -17,7 +17,7 @@ class BlobstoreCollection(BaseCollection):
         """
         return self._service_get('blobstores')
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def get_by_name(self, name: str) -> Blobstore:
         """
         Get a Nexus 3 blobstore by its name.
@@ -39,19 +39,19 @@ class BlobstoreCollection(BaseCollection):
         raw_blobstore.update(self._service_get(endpoint))
         return Blobstore(**raw_blobstore)
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def quota_status(self, name: str) -> dict:
         """See Nexus 3 API documentation."""
         return self._service_get(f'blobstores/{name}/quota-status')
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def delete(self, name: str) -> None:
         """See Nexus 3 API documentation."""
         resp = self._http.delete(f'blobstores/{name}')
         util.validate_response(resp, 204)
         self.reset()
 
-    @util.with_min_version('3.19.0')
+    @util.with_min_version('3.68.1')
     def create(self, blobstore: Blobstore) -> None:
         resp = self._http.post(
             f'blobstores/{blobstore.type.lower()}', json=blobstore.configuration)
