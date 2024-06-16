@@ -15,7 +15,7 @@ class BlobstoreCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if list cannot be retrieved; i.e.: any HTTP code
         other than 200.
         """
-        return self._service_get('blobstores')
+        return self._http.service_get('blobstores')
 
     @util.with_min_version('3.68.1')
     def get_by_name(self, name: str) -> Blobstore:
@@ -36,13 +36,13 @@ class BlobstoreCollection(BaseCollection):
         for key in ['blobCount', 'totalSizeInBytes', 'availableSpaceInBytes']:
             raw_blobstore.pop(key, None)
 
-        raw_blobstore.update(self._service_get(endpoint))
+        raw_blobstore.update(self._http.service_get(endpoint))
         return Blobstore(**raw_blobstore)
 
     @util.with_min_version('3.68.1')
     def quota_status(self, name: str) -> dict:
         """See Nexus 3 API documentation."""
-        return self._service_get(f'blobstores/{name}/quota-status')
+        return self._http.service_get(f'blobstores/{name}/quota-status')
 
     @util.with_min_version('3.68.1')
     def delete(self, name: str) -> None:

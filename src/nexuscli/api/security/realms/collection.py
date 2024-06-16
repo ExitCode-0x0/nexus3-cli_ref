@@ -38,12 +38,12 @@ class RealmCollection(BaseCollection):
     @util.with_min_version('3.68.1')
     def raw_active(self) -> List[str]:
         """List of active security realms on the Nexus 3 service."""
-        return self._service_get('security/realms/active', api_version='beta')
+        return self._http.service_get('security/realms/active')
 
     @util.with_min_version('3.68.1')
     def raw_list(self) -> List[dict]:
         """The raw Nexus server response for available security realms."""
-        return self._service_get('security/realms/available', api_version='beta')
+        return self._http.service_get('security/realms/available')
 
     @util.with_min_version('3.68.1')
     def activate(self, realm_id: str) -> None:
@@ -55,12 +55,10 @@ class RealmCollection(BaseCollection):
         :raises exception.NexusClientAPIError: if list cannot be retrieved; i.e.: any HTTP code
         other than 204.
         """
-        service_url = self._http.rest_url + 'beta/'
         headers = {'Content-type': 'application/json'}
         data = json.dumps(self.active + [realm_id])
 
-        resp = self._http.put(
-            'security/realms/active', service_url=service_url, headers=headers, data=data)
+        resp = self._http.put('security/realms/active', headers=headers, data=data)
 
         util.validate_response(resp, 204)
 

@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, List
 from urllib.parse import urljoin
 
 import requests
@@ -32,6 +32,29 @@ class NexusHttp:
         :param endpoint: name of the Nexus REST API endpoint.
         """
         return self.request('get', endpoint, stream=True, **kwargs)
+
+    def service_get(self, endpoint: str, valid_responses: Optional[List[int]] = None, **kwargs):
+        """
+        Performs a HTTP GET on the given endpoint, and optionally checks that the response matches
+        the given statuses.
+
+        If ``valid_responses`` is given and the response doesn't match any of the values, a
+        ``NexusClientAPIError`` is raised.
+
+        :param endpoint: name of the Nexus REST API endpoint.
+        :param valid_responses: list of acceptable HTTP statuses
+        :param kwargs: as per :py:func:`requests.request`.
+        :return: the server response as a json object
+        """
+        if valid_responses is None:
+            valid_responses = [200]
+
+        resp = self.get(endpoint, **kwargs)
+
+        if valid_responses and resp.status_code not in valid_responses:
+            raise exception.NexusClientAPIError(resp.content)
+
+        return resp.json()
 
     @property
     def rest_url(self) -> str:
