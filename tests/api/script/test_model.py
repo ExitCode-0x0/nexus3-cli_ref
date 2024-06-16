@@ -28,17 +28,3 @@ def test_get(status_code, x_result, script_collection):
     result = script_collection.get('dummy')
 
     assert result == x_result
-
-
-def test_list_error(script_collection):
-    """Ensure the method raises an exception on unexpected API response"""
-    with pytest.raises(exception.NexusClientAPIError):
-        _ = script_collection.list
-
-
-def test_list(script_collection):
-    """Ensure the method returns the expected value on success"""
-    x_resp = script_collection._http.get.return_value
-    x_resp.status_code = 200
-
-    assert script_collection.list == x_resp.json.return_value

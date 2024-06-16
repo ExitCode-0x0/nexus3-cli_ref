@@ -241,7 +241,7 @@ class RepositoryCollection(BaseCollection):
             dict: for the format, see `List Repositories
             <https://help.sonatype.com/repomanager3/rest-and-integration-api/repositories-api#RepositoriesAPI-ListRepositories>`_.
         """
-        return self._service_get('repositories')
+        return self._http.service_get('repositories')
 
     def delete(self, name):
         """

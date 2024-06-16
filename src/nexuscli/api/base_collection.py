@@ -74,21 +74,6 @@ class BaseCollection:
             raise exception.FeatureNotImplemented(
                 'Unable use groovy scripts: groovy_enabled is False')
 
-    def _service_get(self, endpoint: str, api_version: Optional[str] = None):
-        """Most implementations of :py:meth:`raw_list` will use something like this"""
-        if self._http is None:
-            raise AttributeError('Define a client before using this method')
-
-        service_url = None
-        if api_version is not None:
-            service_url = self._http.rest_url + api_version + '/'
-        resp = self._http.get(endpoint, service_url=service_url)
-
-        if resp.status_code != 200:
-            raise exception.NexusClientAPIError(resp.content)
-
-        return resp.json()
-
     @staticmethod
     def _get_by_key(items: List[dict], key: str, value: str):
         """Returns the first matching item in a list of dictionaries where item[key] == value"""

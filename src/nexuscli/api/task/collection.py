@@ -14,7 +14,7 @@ class TaskCollection(BaseCollection):
         other than 200.
         """
         # TODO: handle pagination
-        return self._service_get('tasks')
+        return self._http.service_get('tasks')
 
     @util.with_min_version('3.68.1')
     def show(self, task_id: str) -> dict:

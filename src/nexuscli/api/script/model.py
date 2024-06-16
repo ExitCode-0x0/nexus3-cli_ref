@@ -47,7 +47,7 @@ class ScriptCollection(BaseCollection):
             raise exception.NexusClientAPIError(resp.content)
 
     def raw_list(self):
-        return self._service_get('script')
+        return self._http.service_get('script')
 
     def create_if_missing(self, name, content=None, script_type='groovy'):
         """
