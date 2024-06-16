@@ -4,6 +4,7 @@ from pprint import pformat
 
 from nexuscli import exception
 from nexuscli.api import repository
+from nexuscli.api.repository.model import RawHostedRepository
 
 
 def test_create_type_error(repository_collection, faker):
@@ -27,7 +28,6 @@ def test_repository_init(nexus_mock_client, mocker):
     nexus_mock_client._scripts = mocker.PropertyMock()
     nexus_mock_client._repositories = None  # force a reload on instantiation
     x_calls = [
-        mocker.call('nexus3-cli-repository-delete'),
         mocker.call('nexus3-cli-repository-get'),
         mocker.call('nexus3-cli-repository-create')]
 
@@ -71,19 +71,19 @@ def test_create_repository(
     run_script.assert_called_with('nexus3-cli-repository-create', data=json_dumps.return_value)
 
 
-def test_delete(nexus_mock_client, faker, mocker):
+@pytest.mark.integration
+def test_delete(nexus_client):
     """
-    Ensure the delete method verifies the groovy script is in place and runs it
-    with the configuration for the repository to be created as argument. Also
-    test that the result is correctly interpreted for success/failure.
+    Create a repository, delete it, and check that it no longer exists
     """
-    nexus_mock_client._scripts = mocker.PropertyMock()
-    x_name = faker.word()
-
-    nexus_mock_client.repositories.delete(x_name)
-
-    nexus_mock_client.repositories.run_script.assert_called_with(
-        'nexus3-cli-repository-delete', data=x_name)
+    r = RawHostedRepository(
+        name='my-repository',
+        blob_store_name='default',
+        strict_content_type_validation=False,
+        write_policy='ALLOW',
+    )
+    nexus_client.repositories.create(r)
+    nexus_client.repositories.delete('my-repository')
 
 
 # TODO: test all repos, not just the built-in maven ones

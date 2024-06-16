@@ -13,7 +13,6 @@ from nexuscli.api.repository import model, Repository
 # TODO: determine `SCRIPT_CREATE_VERSIONS` based on the existence of a versioned .groovy script
 SCRIPT_CREATE_VERSIONS = [semver.VersionInfo(3, 21, 0)]
 SCRIPT_NAME_CREATE = 'nexus3-cli-repository-create'
-SCRIPT_NAME_DELETE = 'nexus3-cli-repository-delete'
 SCRIPT_NAME_GET = 'nexus3-cli-repository-get'
 
 
@@ -191,7 +190,7 @@ class RepositoryCollection(BaseCollection):
             SCRIPT_CREATE_VERSIONS)
 
     def script_dependencies(self,) -> List[str]:
-        return [SCRIPT_NAME_DELETE, SCRIPT_NAME_GET, self._script_create]
+        return [SCRIPT_NAME_GET, self._script_create]
 
     def get_by_name(self, name: str) -> Repository:
         """
@@ -243,14 +242,19 @@ class RepositoryCollection(BaseCollection):
         """
         return self._http.service_get('repositories')
 
-    def delete(self, name):
+    def delete(self, name: str) -> None:
         """
         Delete a repository.
 
         :param name: name of the repository to be deleted.
         :type name: str
         """
-        self.run_script(SCRIPT_NAME_DELETE, data=name)
+        response = self._http.delete(f'repositories/{name}')
+
+        if response.status_code != 204:
+            raise exception.NexusClientAPIError(
+                f'Deleting repository {name}. Reason: {response.reason} '
+                f'Status code: {response.status_code} Text: {response.text}')
 
     def new(self, repo_type, **kwargs):
         """Creates a Repository instance object"""
