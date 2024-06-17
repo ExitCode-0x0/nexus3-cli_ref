@@ -162,6 +162,6 @@ pypi:
 docker:
   stage: trigger
   trigger:
-    project: thiagoconde/docker-nexus3-cli
+    project: thiagoconde-oss/docker-nexus3-cli
     branch: master
   only: ['master', 'tags']
