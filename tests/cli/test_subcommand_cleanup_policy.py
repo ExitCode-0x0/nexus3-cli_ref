@@ -4,9 +4,9 @@ import pytest
 from nexuscli.cli import nexus_cli
 
 
-@pytest.mark.xfail('https://gitlab.com/thiagocsf/nexus3-cli/-/issues/18')
+@pytest.mark.xfail('https://gitlab.com/thiagoconde-oss/nexus3-cli/-/issues/18')
 @pytest.mark.integration
-@pytest.mark.xfail(reason='https://gitlab.com/thiagocsf/nexus3-cli/-/issues/18')
+@pytest.mark.xfail(reason='https://gitlab.com/thiagoconde-oss/nexus3-cli/-/issues/18')
 def test_cleanup_policy(cli_runner, faker):
     """Ensure the command creates a new policy and that is shows on the list"""
     x_name = faker.pystr()
