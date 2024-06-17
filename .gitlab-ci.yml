@@ -60,10 +60,11 @@ mypy:
 package:
   <<: *unit_template
   stage: build
-  before_script: []
+  before_script:
+    - python -m pip install -U setuptools wheel build
   script:
-    - python setup.py sdist bdist_wheel
-    - pip install .
+    - python -m build
+    - pip install dist/nexus3_cli-*.whl
     - pip freeze > requirements.txt
     - pip install pip-audit
     - apt-get update && apt-get install -y jq
