@@ -1,3 +1,9 @@
+# Not maintained
+
+As of 2024-09-29, I am no longer able to dedicate the time and effort needed to maintain this project. I'd like to thank everyone who submitted issues and contributions over the past 6+ years.
+
+If anyone would like to take this project over, please create an issue and tag me on it to discuss.
+
 # nexus3-cli
 
 A python-based command-line interface and API client for Sonatype's [Nexus
