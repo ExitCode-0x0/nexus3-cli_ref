@@ -7,7 +7,7 @@ from nexuscli.api.repository import collection as repository_collection
 from nexuscli.api.repository import model as repository_model
 from nexuscli.cli import (
     repository_options, root_commands, util, subcommand_blobstore, subcommand_repository,
-    subcommand_cleanup_policy, subcommand_realm, subcommand_script, subcommand_task,
+    subcommand_cleanup_policy, subcommand_realm, subcommand_role, subcommand_script, subcommand_task,
     blobstore_options)
 from nexuscli.cli.constants import ENV_VAR_PREFIX
 
@@ -530,6 +530,53 @@ def security_realm_active(ctx: click.Context):
 def security_realm_available(ctx: click.Context, **kwargs):
     """List available security realms."""
     subcommand_realm.cmd_available(ctx.obj, **kwargs)
+
+@security.group(cls=util.AliasedGroup, name='role')
+def security_role():
+    """Security roles operations."""
+    pass
+
+@security_role.command(name='list')
+@click.option('--json/--no-json', default=False, help='Print output as json')
+@util.with_nexus_client
+def security_role_list(ctx: click.Context, **kwargs):
+    """List all security roles."""
+    subcommand_role.cmd_list(ctx.obj, **kwargs)
+
+@security_role.command(name='show')
+@click.argument('role_id')
+@util.with_nexus_client
+def security_role_show(ctx: click.Context, role_id):
+    """Show details of a security role."""
+    subcommand_role.cmd_show(ctx.obj, role_id)
+
+@security_role.command(name='create')
+@click.option('--json/--no-json', default=False, help='Print output as json')
+@click.option('--description', required=True)
+@click.option('--permissions', required=True)
+@click.argument('name')
+@util.with_nexus_client
+def security_role_create(ctx: click.Context, name, description, permissions):
+    """Create a new security role."""
+    subcommand_role.cmd_create(ctx.obj, name, description, permissions)
+
+@security_role.command(name='delete')
+@click.option('--json/--no-json', default=False, help='Print output as json')
+@click.argument('role_id')
+@util.with_nexus_client
+def security_role_delete(ctx: click.Context, role_id):
+    """Delete a security role."""
+    subcommand_role.cmd_delete(ctx.obj, role_id)
+
+@security_role.command(name='update')
+@click.option('--json/--no-json', default=False, help='Print output as json')
+@click.argument('role_id')
+@click.argument('description')
+@click.argument('permissions')
+@util.with_nexus_client
+def security_role_update(ctx: click.Context, role_id, description, permissions):
+    """Update a security role."""
+    subcommand_role.cmd_update(ctx.obj, role_id, description, permissions)
 
 
 #############################################################################
